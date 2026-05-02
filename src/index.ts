@@ -1,5 +1,5 @@
 import http from 'node:http';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'node:crypto';
 
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || 'localhost:' + PORT;
@@ -13,7 +13,7 @@ type Todo = {
 
 const todos: Todo[] = [
   {
-    id: uuidv4(),
+    id: randomUUID(),
     title: 'Touch grass',
     createdAt: new Date(),
     completedAt: null,
@@ -72,7 +72,7 @@ const server = http.createServer((req, res) => {
                 res.end(`key 'title' does not exist in body\n`);
                 return;
               }
-              const id = uuidv4();
+              const id = randomUUID();
               const todo = {
                 id,
                 title: json['title'],
