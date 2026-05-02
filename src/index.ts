@@ -20,6 +20,10 @@ const todos: Todo[] = [
   },
 ];
 
+function findTodo(id: string) {
+  return todos.find((todo) => todo.id === id);
+}
+
 const server = http.createServer((req, res) => {
   if (!req.url) {
     res.writeHead(500, { 'content-type': 'text/plain' });
@@ -51,36 +55,92 @@ const server = http.createServer((req, res) => {
         break;
 
       case 'todos':
-        if (method === 'GET') {
-          res.writeHead(200, { 'content-type': 'application/json' });
-          res.end(JSON.stringify(todos, null, 2) + '\n');
-        } else if (method === 'POST') {
-          if (body == '') {
-            res.writeHead(400, { 'content-type': 'text/plain' });
-            res.end('Bad Request\n');
-            return;
-          }
-          try {
-            const json = JSON.parse(body);
-            if (!json['title']) {
-              throw Error("key 'title' does not exist in body");
+        if (!pathList[1]) {
+          if (method === 'GET') {
+            res.writeHead(200, { 'content-type': 'application/json' });
+            res.end(JSON.stringify(todos, null, 2) + '\n');
+          } else if (method === 'POST') {
+            if (body == '') {
+              res.writeHead(400, { 'content-type': 'text/plain' });
+              res.end('Bad Request\n');
+              return;
             }
-            let id = uuidv4();
-            todos.push({
-              id,
-              title: String(json['title']),
-              createdAt: new Date(),
-              completedAt: null,
-            });
-            res.writeHead(201, { 'content-type': 'application/json' });
-            res.end(JSON.stringify({ id }, null, 2) + '\n');
-          } catch (error: any) {
-            res.writeHead(422, { 'content-type': 'text/plain' });
-            res.end(`Unprocessable Entity ${error.message}\n`);
+            try {
+              const json = JSON.parse(body);
+              if (!json['title']) {
+                res.writeHead(422, { 'content-type': 'text/plain' });
+                res.end(`key 'title' does not exist in body\n`);
+                return;
+              }
+              const id = uuidv4();
+              const todo = {
+                id,
+                title: json['title'],
+                createdAt: new Date(),
+                completedAt: null,
+              };
+              todos.push(todo);
+              res.writeHead(201, { 'content-type': 'application/json' });
+              res.end(JSON.stringify(todo, null, 2) + '\n');
+            } catch (error: any) {
+              res.writeHead(400, { 'content-type': 'text/plain' });
+              res.end(`Bad Request\n`);
+            }
+          } else {
+            res.writeHead(405, { 'content-type': 'text/plain' });
+            res.end(`Method Not Allowed\n`);
           }
         } else {
-          res.writeHead(404, { 'content-type': 'text/plain' });
-          res.end('Not Found\n');
+          const id = pathList[1];
+          const todo = findTodo(id);
+          if (!todo) {
+            res.writeHead(404, { 'content-type': 'text/plain' });
+            res.end('Not Found\n');
+            return;
+          }
+          if (method === 'GET') {
+            res.writeHead(200, { 'content-type': 'application/json' });
+            res.end(JSON.stringify(todo, null, 2) + '\n');
+          } else if (method === 'PATCH') {
+            if (body == '') {
+              res.writeHead(400, { 'content-type': 'text/plain' });
+              res.end('Bad Request\n');
+              return;
+            }
+            try {
+              const json = JSON.parse(body);
+              const index = todos.indexOf(todo);
+              if (!('title' in json) && !('completed' in json)) {
+                res.writeHead(422, { 'content-type': 'text/plain' });
+                res.end(
+                  `either of 'title' or 'completed' does not exist in body\n`,
+                );
+                return;
+              }
+              if (json['title']) {
+                todos[index]!.title = json['title'];
+              }
+              if (json['completed'] !== undefined) {
+                if (json['completed'] === true) {
+                  todos[index]!.completedAt = new Date();
+                } else {
+                  todos[index]!.completedAt = null;
+                }
+              }
+              res.writeHead(204);
+              res.end();
+            } catch (error: any) {
+              res.writeHead(400, { 'content-type': 'text/plain' });
+              res.end(`Bad Request\n`);
+            }
+          } else if (method === 'DELETE') {
+            todos.splice(todos.indexOf(todo), 1);
+            res.writeHead(204);
+            res.end();
+          } else {
+            res.writeHead(405, { 'content-type': 'text/plain' });
+            res.end(`Method Not Allowed\n`);
+          }
         }
         break;
 
