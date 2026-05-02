@@ -1,7 +1,24 @@
 import http from 'node:http';
+import { v4 as uuidv4 } from 'uuid';
 
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || 'localhost:' + PORT;
+
+type Todo = {
+  id: string;
+  title: string;
+  createdAt: Date;
+  completedAt: Date | null;
+};
+
+const todos: Todo[] = [
+  {
+    id: uuidv4(),
+    title: 'Touch grass',
+    createdAt: new Date(),
+    completedAt: null,
+  },
+];
 
 const server = http.createServer((req, res) => {
   if (!req.url) {
