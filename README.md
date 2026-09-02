@@ -1,15 +1,25 @@
-# curd-demo
+# crud-native-http
 
-To install dependencies:
+Minimal CRUD Todo API built with `node:http`, no framework, in-memory storage. Demonstrates the five basic CRUD operations.
+
+## Prerequisites
+
+- [Bun](https://bun.sh) >= 1.3.11
+
+## Installation
 
 ```bash
 bun install
 ```
 
-To run:
+## Usage
 
 ```bash
-bun run index.ts
+# production
+bun run start
+
+# development
+bun run dev
+PORT=4000 bun run dev
 ```
 
-This project was created using `bun init` in bun v1.3.11. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.

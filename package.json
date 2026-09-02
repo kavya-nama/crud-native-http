@@ -1,5 +1,5 @@
 {
-  "name": "curd-demo",
+  "name": "crud-demo",
   "module": "src/index.ts",
   "type": "module",
   "private": true,
@@ -13,8 +13,5 @@
   },
   "peerDependencies": {
     "typescript": "^5"
-  },
-  "dependencies": {
-    "uuid": "^14.0.0"
   }
 }
