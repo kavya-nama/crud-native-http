@@ -1,25 +1,35 @@
 # crud-native-http
 
-Minimal CRUD Todo API built with `node:http`, no framework, in-memory storage. Demonstrates the five basic CRUD operations.
+A tiny in-memory Todo API I made with just `node:http`, no Express.js. 
 
-## Prerequisites
+Wanted to see how raw HTTP works so I did routing and body parsing by hand.
 
-- [Bun](https://bun.sh) >= 1.3.11
-
-## Installation
+## Running 
 
 ```bash
 bun install
+bun run dev
+
+PORT=4000 bun run start
 ```
 
-## Usage
+Runs on `http://localhost:3000` by default.
+
+## Endpoints
+
+```
+GET    /              -> hello world
+GET    /todos         -> list all
+POST   /todos         -> create {title}
+GET    /todos/:id     -> get one
+PATCH  /todos/:id     -> update title or completed
+DELETE /todos/:id     -> delete
+```
+
+Example:
 
 ```bash
-# production
-bun run start
-
-# development
-bun run dev
-PORT=4000 bun run dev
+curl -X POST http://localhost:3000/todos -H "Content-Type: application/json" -d '{"title":"Touch grass"}'
+curl http://localhost:3000/todos
 ```
 
