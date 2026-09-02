@@ -1,5 +1,5 @@
 {
-  "name": "crud-demo",
+  "name": "crud-native-http",
   "module": "src/index.ts",
   "type": "module",
   "private": true,
